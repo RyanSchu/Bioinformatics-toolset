@@ -1,0 +1,50 @@
+from Bio import SeqIO
+import os
+
+#get working directory
+mydir = os.getcwd()
+
+#now create a variable with the actual address of the file
+infile = mydir + "\\.txt"
+
+f = open(infile, 'r')
+
+#quality threshold is the first line of the file
+threshold = f.readline()
+
+#open an additional file to write output to
+g = open("Base Qual Dist output.txt", 'w')
+
+#an empty aray to hold your records
+records = []
+#count how many records are in your fasta file
+record_count = 0
+
+with f as handle:
+    #append your records to an array and count how many you have
+    for record in SeqIO.parse(handle, 'fastq'):
+        records.append(record)
+        record_count += 1
+    
+    #assume each record is the same length and initialize a list of 0s to store our scores
+    base_qual = [0]*len(records[0])
+    
+    #now iterate through each records quality scores and add it to the corresponding index in the base_qual list
+    for record in records:
+        p_score = record.letter_annotations['phred_quality']
+        for i in range(len(p_score)):
+            base_qual[i] += p_score[i]
+
+#now divide everything by the number of records for the mean
+for i in range(len(base_qual)):
+    base_qual[i] = base_qual[i]/record_count
+
+#now count how many means are below threshold
+threshold_count = 0
+for i in base_qual:
+    if i < int(threshold):
+        threshold_count += 1
+            
+g.write(str(threshold_count))
+g.close()
+f.close()

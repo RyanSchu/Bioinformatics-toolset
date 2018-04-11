@@ -1,0 +1,84 @@
+import warnings
+from Bio import BiopythonWarning
+from Bio.Seq import Seq
+from Bio.Alphabet import generic_rna
+import Ryan
+import os
+
+#suppresses warning that sequence entering translation is not a length divisible by three
+warnings.simplefilter('ignore', BiopythonWarning)
+
+#get working directory
+mydir = os.getcwd()
+
+#now create a variable with the actual address of the file
+infile = mydir + "\\open reading frames.txt"
+
+f = open(infile, 'r')
+
+#open an additional file to write output to
+g = open("reading frames output.txt", 'w')
+
+#empty list
+l=[]
+
+#add lines of file to list
+for line in f:
+    l.append(line.strip())
+
+#personal function, just condenses multi line sequences into one line
+l = Ryan.list_condenser_Rosalind(l)
+
+#reduntant step, but i'm just learning to work with biopython
+#turn the Dna into an rna string and set our list to hold it
+l[1] = l[1].replace('T', 'U')
+l[1] = Seq(l[1], generic_rna)
+#make the next line the reverse complement
+l.append(l[1].reverse_complement())
+
+#empty list
+proteinCandidates = []
+
+#AUG is a non overlapping sequence, as such count will return precisely the number of start codons
+augCount = l[1].count('AUG')
+j=0
+index = 0
+#search the sequence for start codons up to the number of times AUG appears
+for i in range(augCount):
+    #find the first AUG after index
+    j = l[1].find('AUG', index)
+    #if this AUG is past the final stop codon, do not add the protein sequence to the list
+    if j > l[1].rfind('UAG') or j > l[1].rfind('UGA') or j > l[1].rfind('UAA'):
+        break
+    #otherwise translate from the found AUG up to a stop codon
+    protein = l[1][j:].translate(to_stop=True)
+    #check that the protein is not redundant
+    if protein not in proteinCandidates:
+        proteinCandidates.append(protein)
+    #increase index past the first AUG
+    index = j +1
+
+#now repeat this for the revrse complement
+augCount = l[2].count('AUG')
+j=0
+index = 0
+#search the sequence for start codons up to the number of times AUG appears
+for i in range(augCount):
+    #find the first AUG after index
+    j = l[2].find('AUG', index)
+     #if this AUG is past the final stop codon, do not add the protein sequence to the list
+    if j > l[2].rfind('UAG') or j > l[2].rfind('UGA') or j > l[2].rfind('UAA'):
+        break
+    #otherwise translate from the found AUG up to a stop codon
+    protein = l[2][j:].translate(to_stop=True)
+    #check that the protein is not redundant
+    if protein not in proteinCandidates:
+        proteinCandidates.append(protein)
+    #increase index past the first AUG
+    index = j +1
+
+for i in proteinCandidates:
+    g.write(str(i) + '\n')
+
+f.close()
+g.close()

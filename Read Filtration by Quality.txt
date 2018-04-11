@@ -1,0 +1,40 @@
+from Bio import SeqIO
+import math
+import os
+
+#get working directory
+mydir = os.getcwd()
+
+#now create a variable with the actual address of the file
+infile = mydir + "\\.txt"
+
+f = open(infile, 'r')
+
+#quality threshold and proportion is the first line of the file
+#.split threshold is now a list with quality threshold at index 0 and proportion at index 1
+threshold = f.readline().split()
+
+#open an additional file to write output to
+g = open("Read Filtration by Quality output.txt", 'w')
+
+#start a count of the number of records whose proportion of bases is greater than the threshold
+count = 0
+
+with f as handle:
+     #the proportion of bases that must be greater than the threshold
+    proportion = math.floor(len(record.letter_annotations['phred_quality'])*int(threshold[1])/100)
+    #iterate through each record
+    for record in SeqIO.parse(handle, 'fastq'):
+        #the number of bases greater than the threshold
+        base_count = 0
+        #count how many bases are abouve threshold
+        for i in record.letter_annotations['phred_quality']:
+            if i >= int(threshold[0]):
+                base_count +=1
+        #If the base count is greater than or equal to the proportion increase our count of records
+        if base_count >= proportion:
+            count += 1 
+
+g.write(str(count))
+g.close()
+f.close()

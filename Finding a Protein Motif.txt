@@ -1,0 +1,56 @@
+import urllib
+import os
+mydir = os.getcwd()
+
+#now create a variable with the actual address of the file
+infile = mydir + "\\rosalind_mprt.txt"
+
+
+#find N, then not P then S or T, then not P
+
+f = open(infile, 'r')
+#empty list
+l=[]
+#add lines of file to list
+
+for line in f:
+    l.append(line.strip())
+    
+
+motifLocations = []
+for lines in l:
+    #get fasta file from the uniprot website
+    data =  str(urllib.request.urlopen('http://www.uniprot.org/uniprot/' + lines + '.fasta').read())
+    #refine the fasta file so that it is only the sequence data without any line breaks
+    data = data[data.find('\\'):].replace('\\n', '')
+    #initialize a starting index
+    index = 0
+    
+    #Ceiling for motif count is the number of N amino acids
+    #makes search marginally faster
+    
+    for i in range(data.count('N')):
+        #search for an N amino acid
+        location = data.find('N', index)
+        #if we find ourselves at the end of the list, skip the rest of the checks
+        #or skip if there are less than 3 indices after location
+        if data.find('N') == -1 or len(data) - location <=2:
+            break
+        #check the three indices after N for the proper pattern
+        elif((data[location+1] != 'P') and ((data[location +2] =='S') or (data[location +2] == 'T')) and (data[location +3] != 'P')):
+            #add the ID of the protein followed by a blank to be filled if it does not exist already
+            if lines not in motifLocations:
+                motifLocations.append(lines)
+                motifLocations.append('')
+            #if pattern found add it to the list
+            motifLocations[-1] += ' ' + str(location+1)
+            #increase the index to search ahead of
+            index = location +1
+        else:
+            #increase the index to search ahead of
+            index = location +1
+        #once we've finished this loop, clean up the list by removing extra whitespace
+#sometimes a pattern is not found, so that empty index we made earlier is still empty
+#clean up our list by removing empty indices and their associated IDs
+for i in motifLocations:
+    print(i.strip(' '))

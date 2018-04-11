@@ -1,0 +1,47 @@
+from Bio.Seq import Seq
+from Bio.Alphabet import generic_dna
+import Ryan
+import os
+
+#get working directory
+mydir = os.getcwd()
+
+#now create a variable with the actual address of the file
+infile = mydir + "\\.txt"
+
+f = open(infile, 'r')
+
+#open an additional file to write output to
+g = open("Bioinformatics Armory output.txt", 'w')
+
+#empty list
+l =[]
+
+#add lines of file to list
+for line in f:
+    l.append(line.strip())
+
+#make a function to condense files containing single sequenes into one line just in case
+def Seq_condenser(l):
+    condensed_Seq = ['']
+    for i in l:
+         condensed_Seq[0] =  condensed_Seq[0] + i
+    return condensed_Seq
+
+#condense the sequence into one line
+l = Seq_condenser(l)
+
+#Now use biopythons tools to just count the nucleotides and write them to file
+my_seq = Seq(l[0])
+Acount = my_seq.count('A')
+Ccount = my_seq.count('C')
+Gcount = my_seq.count('G')
+Tcount = my_seq.count('T')
+
+g.write(str(Acount) + '\n')
+g.write(str(Ccount) + '\n')
+g.write(str(Gcount) + '\n')
+g.write(str(Tcount))
+
+g.close()
+f.close()

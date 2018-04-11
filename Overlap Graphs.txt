@@ -1,0 +1,75 @@
+#referenced working with files code
+#starting with this code i decided to start creating functions that I can later make use of
+#Making an overlap graph seemed like a repeatable exercise so I wrote these functions
+#bear in mind that some of this functionality is specific to working with rosalind HW, functions will likely need tweaking to work more broadly
+
+#files in rosalind often have sequences in multiple lines, but for our test case sequence was in multiple lines
+#the following function just takes the list made from the a typical Rosalind file and condeses all the sequence for one gene into one line
+def list_condenser_Rosalind(list_name):
+    #empty list
+    list2 = []
+    for i in list_name:
+        #adds the name of the gene as well as an empty index immediately afterwards
+        if '>' in i:
+            list2.append(i[1:])
+            list2.append('')
+        else:
+            #adds the DNA string to the current empty index
+            list2[len(list2)-1] =  list2[len(list2)-1] + i
+    return list2
+
+#takes input made from the previous function, lists with alternating names and sequences
+#finds prefixes and suffixes of length k from each sequence and stores them in a dictionary
+def prefix_suffix_genes_Rosalind(listOfStrings, k = 3):
+    #empty dictionary
+    prefSuffDic = {}
+    for i in range(len(listOfStrings)):
+        #sequences should be at every odd index
+        if i % 2 != 0:
+            #so when you find a sequence create a new dict entry for the index before
+            prefSuffDic[listOfStrings[i-1]] = [0,0]
+            #set the first value of the dict entry to be the prefix
+            prefSuffDic[listOfStrings[i-1]][0] = l[i][0:k]
+            #set the second value of the dict entry as the suffix
+            prefSuffDic[listOfStrings[i-1]][1] = l[i][-k:]
+    #retruns 2D dictionaries that have both prefix and suffix stored for a particular key
+    return prefSuffDic
+
+#takes input from the previous function, a 2D dictionary
+#returns the edges of overlap based on this dictionary
+def edge_list(prefSuffDic):
+    edgeList = []
+    #have to compare every entry in the dictionary with each other
+    for key in prefSuffDic:
+        for key2 in prefSuffDic:
+            #check if the suffix of one key matches the prefix of another and make sure the keys are not the same
+            #gene fragment can't overlap with itself
+            if (prefSuffDic[key][1] == prefSuffDic[key2][0]) and (key != key2):
+                edgeList.append(key + ' ' + key2)
+    #return list of edges
+    return edgeList
+
+# import working directory and assign it to a variable for later use
+import os
+mydir = os.getcwd()
+
+#now create a variable with the actual address of the file
+infile = mydir + "\\rosalind_grph.txt"
+
+#open readable version of the file
+
+f = open(infile, 'r')
+#empty list
+l = []
+#add lines of file to list
+for line in f:
+    l.append(line.strip())
+
+#make sure all sequences are in one line
+l = list_condenser_Rosalind(l)
+#find prefixes and suffixes of those sequences
+d = prefix_suffix_genes_Rosalind(l)
+#find which suffixes match a prefix
+edges = edge_list(d)
+for i in edges:
+    print(i)

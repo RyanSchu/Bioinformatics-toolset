@@ -1,0 +1,51 @@
+import Ryan
+import os
+
+#get working directory
+mydir = os.getcwd()
+
+#now create a variable with the actual address of the file
+infile = mydir + "\\Set Operations.txt"
+
+f = open(infile, 'r')
+
+#open an additional file to write output to
+g = open("Set Operations output.txt", 'w')
+
+#empty list
+l=[]
+
+#add lines of file to list
+for line in f:
+    l.append(line.strip())
+
+#convert string to proper int
+n = eval(l[0])
+
+#initialize the universal set and fill with numbers up including n
+U = set({})
+for i in range(n):
+    U.add(i+1)
+
+#create sets from the input file
+A = eval(l[1])
+B = eval(l[2])
+
+#basic set operations
+unionAB = A|B
+intersectionAB = A & B
+AminusB = A - B
+BminusA = B - A
+Acompliment = U - A
+Bcompliment = U - B
+
+#write them to file
+g.write(str(unionAB) + '\n')
+g.write(str(intersectionAB) + '\n')
+g.write(str(AminusB) + '\n')
+g.write(str(BminusA) + '\n')
+g.write(str(Acompliment) + '\n')
+g.write(str(Bcompliment))
+
+g.close()
+f.close()

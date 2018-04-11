@@ -1,0 +1,25 @@
+#referenced working with files code
+# import working directory and assign it to a variable for later use
+
+import os
+mydir = os.getcwd()
+
+#now create a variable with the actual address of the file
+
+infile = mydir + "\\Transcribing DNA into RNA.txt"
+
+#open readable version of the file
+
+f = open(infile, 'r')
+
+#assyming there is only one DNA string on one line, set variable t to equal the string
+
+t = f.readline()
+
+#now use str.replace to switch every T to a U
+
+u = t.replace('T', 'U')
+
+#print U
+
+print(u)

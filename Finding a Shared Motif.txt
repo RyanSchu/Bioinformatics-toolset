@@ -1,0 +1,66 @@
+import Ryan
+#personal module imported for the following function
+#def list_condenser_Rosalind(list_name):
+    #empty list
+    #list2 = []
+    #for i in list_name:
+        #adds the name of the gene as well as an empty index immediately afterwards
+        #if '>' in i:
+            #list2.append(i[1:])
+            #list2.append('')
+        #else:
+            #adds the DNA string to the current empty index
+            #list2[len(list2)-1] =  list2[len(list2)-1] + i
+    #return list2
+#import working directory and assign it to a variable for later use
+import os
+mydir = os.getcwd()
+
+#now create a variable with the actual address of the file
+infile = mydir + "\\Finding a Shared Motif.txt"
+
+#open readable version of the file
+
+f = open(infile, 'r')
+#empty list
+l = []
+#add lines of file to list
+for line in f:
+    l.append(line.strip())
+#condense the list so that sequences are in one line
+l = list_condenser_Rosalind(l)
+#don't care about the names in this case so get rid of those
+del l[0::2]
+#list now contains only sequences
+#longest common motif can only be as long as the shortest sequence, and must be contained by that sequence
+#so first find the shortest item, if there are multiple it shouldn't matter as each must contain the longest common motif
+motifContainer = min(l, key=len)
+#now work backwards
+#check if other sequences contain the shortest sequences, 
+#if any do not check one fewer nucleotide from the shortest sequence
+#note, everytime you do so, an additional check must be made shifting the reading frame over by 1
+#so as the length of your test motif shortens, the number of checks you must make increases
+startIndex = 0
+endIndex = len(motifContainer) -1 
+i = 0
+longest = ''
+#while loop telly you how many nucleotides to take off the end
+while i < len(motifContainer):
+    #for loop tells you how much to shift over the reading frame
+    for x in range(i):
+        check = motifContainer[x:endIndex-i+x]
+	#for loop compares the current motif to the entire list of sequences
+        for j in l:
+	    #if any sequence does not contain the motif break
+            if check not in j:
+                break
+	    #if you are at the end of the list, then it passes and you've found the longest substring
+            elif j == l[-1]:
+                longest = check
+        if longest != '':
+            break
+    if longest != '':
+        break
+    else:
+        i += 1
+print(longest)        

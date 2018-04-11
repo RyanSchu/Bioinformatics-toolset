@@ -1,0 +1,37 @@
+from Bio.Seq import Seq
+from Bio.Alphabet import generic_dna
+import Ryan
+import os
+
+#get working directory
+mydir = os.getcwd()
+
+#now create a variable with the actual address of the file
+infile = mydir + "\\RNA splicing.txt"
+
+f = open(infile, 'r')
+
+#open an additional file to write output to
+g = open("RNA splicing output.txt", 'w')
+
+#empty list
+l=[]
+
+#add lines of file to list
+for line in f:
+    l.append(line.strip())
+
+#personal function, just condenses multi line sequences into one line
+l = Ryan.list_condenser_Rosalind(l)
+del l[0::2]
+for i in range(len(l)-1):
+    while l[0].count(l[i+1]) != 0:
+        l[0] = l[0].replace(l[i+1], '')
+        
+l[0] = Seq(l[0], generic_dna)
+protein = l[0].translate(to_stop = True)
+
+g.write(str(protein) + '\n')
+
+f.close()
+g.close()

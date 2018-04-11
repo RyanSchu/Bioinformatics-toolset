@@ -1,0 +1,34 @@
+from Bio import Entrez
+import Ryan
+import os
+
+#get working directory
+mydir = os.getcwd()
+
+#now create a variable with the actual address of the file
+infile = mydir + "\\GenBank Intro.txt"
+
+f = open(infile, 'r')
+
+#open an additional file to write output to
+g = open("GenBank Intro output.txt", 'w')
+
+#empty list
+l =[]
+
+#add lines of file to list
+for line in f:
+    l.append(line.strip())
+#now just take general format from NCBI search with the same parameters and replace the corresponding parts with our variable l
+
+Entrez.email = "rschubert1@luc.edu"
+
+#l[0] is organism name
+#l[1] and #l[2] are our start and end dates respectively
+handle = Entrez.esearch(db='nucleotide', term =l[0] + '[Organism] AND ("' + l[1] + '"[PDAT] : "' + l[2] +'"[PDAT])')
+record = Entrez.read(handle)
+record_count = record['Count']
+
+g.write(record_count)
+g.close()
+f.close()

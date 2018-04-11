@@ -1,0 +1,51 @@
+import Ryan
+import os
+
+#suppresses warning that sequence entering translation is not a length divisible by three
+warnings.simplefilter('ignore', BiopythonWarning)
+
+#get working directory
+mydir = os.getcwd()
+
+#now create a variable with the actual address of the file
+infile = mydir + "\\Transitions and Transversions.txt"
+
+f = open(infile, 'r')
+
+#open an additional file to write output to
+g = open("Transitions and Transversions output.txt", 'w')
+
+#empty list
+l=[]
+
+#add lines of file to list
+for line in f:
+    l.append(line.strip())
+    
+#personal function, just condenses multi line sequences into one line
+l = Ryan.list_condenser_Rosalind(l)
+
+#make your purines and pyrimidines
+purines = ['A','G']
+pyrimidines = ['C','T']
+#set your counts
+transitionCount = 0
+transversionCount = 0
+
+del l[0::2]
+for i in range(len(l[0])):
+    #check if the two indices are different
+    if l[0][i] != l[1][i]:
+        #check if it's a transition
+        if (l[0][i] in purines and l[1][i] in purines) or (l[0][i] in pyrimidines and l[1][i] in pyrimidines):
+            transitionCount += 1
+        #check if its a transversion
+        elif (l[0][i] in pyrimidines and l[1][i] in purines) or (l[0][i] in purines and l[1][i] in pyrimidines):
+            transversionCount += 1
+
+#set and print your ratio
+tRatio = transitionCount/transversionCount
+g.write(str(tRatio))
+
+g.close()
+f.close() 

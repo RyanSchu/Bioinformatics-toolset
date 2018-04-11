@@ -1,0 +1,44 @@
+from Bio.Seq import Seq
+from Bio.Alphabet import generic_dna
+import os
+
+#get working directory
+mydir = os.getcwd()
+
+#now create a variable with the actual address of the file
+infile = mydir + "\\De Bruijn Graphs.txt"
+
+f = open(infile, 'r')
+
+#open an additional file to write output to
+g = open("De Bruijn Graphs output.txt", 'w')
+
+#empty list
+DNA =[]
+
+#add lines of file to list
+for line in f:
+    DNA.append(line.strip())
+
+k = len(DNA[0]) - 1
+for i in range(len(DNA)):
+    DNA[i] = Seq(DNA[i], generic_dna)
+
+rev_comp = []
+for i in l:
+    rev_comp.append(i.reverse_complement())
+
+SunionSRC = set({})
+for i in range(len(DNA)):
+    SunionSRC.add(str(DNA[i]))
+    SunionSRC.add(str(rev_comp[i]))
+
+adjacency_list = set({})
+for i in SunionSRC:
+    adjacency_list.add('(' + i[0:k] + ', ' + i[1:k+1] + ')')
+
+for i in adjacency_list:
+    g.write(i +'\n')
+
+g.close()
+f.close()

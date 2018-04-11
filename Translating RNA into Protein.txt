@@ -1,0 +1,48 @@
+#referenced working with files code
+# import working directory and assign it to a variable for later use
+
+import os
+mydir = os.getcwd()
+
+#now create a variable with the actual address of the file
+
+infile = mydir + "\\Translating RNA into Protein.txt"
+
+#open readable version of the file
+#funnel the file to a usable string
+
+f = open(infile, 'r')
+rna = f.readline()
+
+#initialize a dictionary with all the codons
+
+d = {'UUU' :'F',      'CUU': 'L',     'AUU': 'I',      'GUU': 'V',
+'UUC': 'F',      'CUC': 'L' ,     'AUC': 'I',      'GUC': 'V',
+'UUA': 'L',      'CUA': 'L',      'AUA': 'I',      'GUA': 'V',
+'UUG': 'L',      'CUG': 'L',      'AUG': 'M',      'GUG': 'V',
+'UCU': 'S',      'CCU': 'P',      'ACU': 'T',      'GCU': 'A',
+'UCC': 'S',      'CCC': 'P',      'ACC': 'T',      'GCC': 'A',
+'UCA': 'S',      'CCA': 'P',      'ACA': 'T',      'GCA': 'A',
+'UCG': 'S',      'CCG': 'P' ,     'ACG': 'T',      'GCG': 'A',
+'UAU': 'Y',      'CAU': 'H',      'AAU': 'N',      'GAU': 'D',
+'UAC': 'Y',      'CAC': 'H',      'AAC': 'N',      'GAC': 'D',
+'UAA': 'Stop',   'CAA': 'Q',      'AAA': 'K',      'GAA' :'E',
+'UAG': 'Stop',   'CAG': 'Q',      'AAG': 'K',      'GAG': 'E',
+'UGU': 'C',      'CGU': 'R',      'AGU': 'S',      'GGU': 'G',
+'UGC': 'C',      'CGC': 'R',      'AGC': 'S' ,     'GGC': 'G',
+'UGA': 'Stop',   'CGA': 'R',      'AGA': 'R',      'GGA': 'G',
+'UGG': 'W',      'CGG': 'R',      'AGG': 'R',      'GGG': 'G'} 
+
+#open writable file for storing the protein sequence
+#create variable to hold the index of the codons
+
+j=0
+g = open('protein output.txt', 'w')
+
+#iterate through every codon and add the corresponding amino acid to the file
+#if stop codon do not append
+
+for i in range(int(len(rna)/3)):
+    if d[rna[j:j+3]] != 'Stop':
+        g.write(d[rna[j:j+3]])
+    j +=3

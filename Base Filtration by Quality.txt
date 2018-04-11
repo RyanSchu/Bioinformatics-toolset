@@ -1,0 +1,34 @@
+from Bio import SeqIO
+import os
+
+#get working directory
+mydir = os.getcwd()
+
+#now create a variable with the actual address of the file
+infile = mydir + "\\.txt"
+
+f = open(infile, 'r')
+
+#quality threshold is the first line of the file
+threshold = f.readline()
+
+#open an additional file to write output to
+g = open("Base Filt by Qual output.txt", 'w')
+
+with f as handle:
+    #iterate through each record
+    for record in SeqIO.parse(handle, 'fastq'):
+        left_trim = 0
+        right_trim = len(record) - 1 
+        #take phred quality scores from the record
+        p_score = record.letter_annotations['phred_quality']
+        #count how many leading bases need to be trimmed
+        while p_score[left_trim] < int(threshold):
+            left_trim +=1
+        #count how many trailing bases need to be trimmed
+        while p_score[right_trim] < int(threshold):
+            right_trim -= 1
+        #now write to your file in fastq format
+        SeqIO.write(record[left_trim:right_trim+1], g, "fastq")
+
+g.close()

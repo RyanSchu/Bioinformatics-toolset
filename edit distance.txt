@@ -1,0 +1,67 @@
+from Bio.Seq import Seq
+from Bio.Alphabet import generic_dna
+import Ryan
+import os
+import numpy
+
+#get working directory
+mydir = os.getcwd()
+
+#now create a variable with the actual address of the file
+infile = mydir + "\\edit distance.txt"
+
+f = open(infile, 'r')
+
+#open an additional file to write output to
+g = open("Edit Distance Output.txt", 'w')
+
+#empty list
+l =[]
+
+#add lines of file to list
+for line in f:
+    l.append(line.strip())
+
+#clean and shorten the list to contain just our sequences
+l = Ryan.list_condenser_Rosalind(l)
+del l[0::2]
+
+#new method returns the edit distance between str1 and str2 using a preinitialized matrix
+#defualts are for an average NW matrix, nut one oriented towards edit distance
+#str_index corresponds to i and j as follows
+#index of i in our initialized NW matrix corresponds to row values, or to index of string l[0] +1
+#index of j in our initialized NW matrix corresponds to column values, or to index of string l[1] +1
+def NW_edit(matrix, str1, str2, str1_index,str2_index, match = 0, mismatch = 1, gap = 1):
+    if str1[str1_index] == str2[str2_index]:
+        diagonal = match + matrix[str1_index][str2_index]
+    else:
+        diagonal = mismatch + matrix[str1_index][str2_index]
+    H_gap = gap + matrix[str1_index][str2_index + 1]
+    V_gap = gap + matrix[str1_index + 1][str2_index]
+    return min(diagonal, H_gap, V_gap)
+
+#row and column numbers correspond to lengths of our reads
+row = len(l[0]) + 1
+column = len(l[1]) + 1
+
+#create an emtpy matrix
+M = numpy.zeros((row, column))
+
+#now initialize, add our gap penalties to our 0th row and column
+for i in range(row):
+    M[i][0] = i 
+for i in range (column):
+    M[0][i] = i 
+    
+#now iterate through the matrix by row
+for i in range(row):
+    #skip the 0th row
+    if i !=0:
+        #for each item in the row
+        for j in range(column):
+            #if it is not an initilized value set it as the minimum from our edit distance
+            if M[i][j] == 0:
+                M[i][j] = NW_edit(matrix = M, str1 = l[0], str2 = l[1], str1_index = i-1, str2_index = j-1, match = 0, mismatch = 1, gap = 1)
+#now print the bottom right item
+g.write(str(int(M[row-1][column-1])))
+g.close()

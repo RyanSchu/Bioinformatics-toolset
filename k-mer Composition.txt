@@ -1,0 +1,60 @@
+import Ryan
+import os
+
+#get working directory
+mydir = os.getcwd()
+
+#now create a variable with the actual address of the file
+infile = mydir + "\\k-Mer Composition.txt"
+
+f = open(infile, 'r')
+
+#open an additional file to write output to
+#specify BOM or you will get giberish output
+g = open("k-Mer output.txt", 'w', encoding = 'utf16')
+
+#empty list
+l=[]
+
+#add lines of file to list
+for line in f:
+    l.append(line.strip())
+
+#personal function, just condenses multi line sequences into one line
+l = Ryan.list_condenser_Rosalind(l)
+
+#This method makes a list of all possible dinucleotides
+def two_mer_maker():
+    nucleotides = ['A','C','T','G']
+    dinucleotides = []
+    for i in nucleotides:
+        for j in nucleotides:
+            dinucleotides.append(i + j)
+    return dinucleotides
+
+#This method makes a list of all possible tetranucleotides
+def four_mer_maker():
+    dinucleotides = two_mer_maker()
+    tetranucleotides = []
+    for i in dinucleotides:
+        for j in dinucleotides:
+            tetranucleotides.append(i + j)
+    return tetranucleotides
+
+
+d = {}
+#add all of your unique tetranucleotides to a dictionary
+for i in four_mer_maker():
+    d[i] = 0
+
+#now examine your sequence
+#Check four, compare it to your dictionary then shift over one and check the next four
+for i in range(len(l[1]) - 3):
+    d[l[1][i:i+4]] += 1
+    
+#now write your sorted output
+for i in sorted(d.items()):
+    g.write(str(i[1]) + ' ')
+    
+f.close()
+g.close()

@@ -1,0 +1,31 @@
+from Bio import SeqIO
+from io import StringIO
+import Ryan
+import os
+
+#get working directory
+mydir = os.getcwd()
+
+#now create a variable with the actual address of the file
+infile = mydir + "\\.txt"
+
+f = open(infile, 'r')
+
+#open an additional file to write output to
+g = open("FastQ Format Intro output.txt", 'w')
+
+#empty list
+l =[]
+
+#add lines of file to list
+for line in f:
+    l.append(line.strip())
+
+#use the StringIO to initialize an empty file for output
+handle = StringIO('')
+#Convert using the SeqIO 
+SeqIO.convert(infile, 'fastq', handle, 'fasta')
+#convert formats using the .getvalue() function
+g.write(handle.getvalue())
+
+g.close()
